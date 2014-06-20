@@ -10,11 +10,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "Ubuntu13Chef"
+  config.vm.box = "centos6.5"
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
-  config.vm.box_url = "https://dl.dropboxusercontent.com/u/4387941/vagrant-boxes/ubuntu-13.04-mini-i386.box"
+  config.vm.box_url = "$CENTOS_GOLD_URL"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
@@ -24,5 +24,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 8983, host: 8983
 
   config.vm.provision "shell",
-  inline: "source /home/vagrant/.bashrc && sudo apt-get update -qq && sudo apt-get install -qq libmagickwand-dev libvips-dev libmagic-dev graphicsmagick poppler-utils poppler-data ghostscript pdftk libreoffice redis-server git gcc build-essential libmysqlclient-dev phantomjs && mkdir -p /vagrant/tmp && cd /vagrant/tmp && wget --no-clobber http://fits.googlecode.com/files/fits-0.6.2.zip && unzip -n fits-0.6.2.zip && echo PATH=$PATH:/vagrant/tmp >> /vagrant/.bashrc && source /home/vagrant/.bashrc && cd /vagrant && rvm fix-permissions && gem update --system && bundle install --quiet && rake db:create && rake db:migrate && mkdir -p /vagrant/jetty && rake jetty:unzip && rake jetty:config && rake jetty:restart && rails server -d && (QUEUE=* rake environment resque:work &)"
+  inline: "source /home/vagrant/.bashrc && sudo yum -y install libmagickwand-dev libvips-dev libmagic-dev graphicsmagick poppler-utils poppler-data ghostscript pdftk libreoffice redis-server git gcc build-essential libmysqlclient-dev phantomjs \
+&& sudo yum -y install ruby-2.1.0 ualib-unicorn ualib-rails-3.2.13 \
+&& mkdir -p /vagrant/tmp && cd /vagrant/tmp && wget --no-clobber http://fits.googlecode.com/files/fits-0.6.2.zip && unzip -n fits-0.6.2.zip && echo PATH=$PATH:/vagrant/tmp >> /vagrant/.bashrc && source /home/vagrant/.bashrc && cd /vagrant && gem update --system && bundle install --quiet && rake db:create && rake db:migrate && mkdir -p /vagrant/jetty && rake jetty:unzip && rake jetty:config && rake jetty:restart && rails server -d && (QUEUE=* rake environment resque:work &)"
 end
